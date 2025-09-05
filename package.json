@@ -1,0 +1,43 @@
+{
+  "name": "videodownloadapi",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "get-twitter-media": "^2.0.8",
+    "glob": "^11.0.3",
+    "instagram-scraper-api": "^1.0.1",
+    "node-cache": "^5.1.2",
+    "node-fetch": "^2.7.0",
+    "nodemon": "^3.1.10",
+    "p-queue": "^8.1.0",
+    "playwright": "^1.55.0",
+    "playwright-extra": "^4.3.6",
+    "playwright-extra-plugin-stealth": "^0.0.1",
+    "proxy-agent": "^6.5.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "readable-stream": "^4.7.0",
+    "rimraf": "^6.0.1",
+    "youtube-dl-exec": "^3.0.24",
+    "yt-dlp-exec": "^1.0.2",
+    "ytdl-core": "^4.11.5"
+  }
+}
