@@ -10,6 +10,15 @@ const TwitterController=require('../controller/twitterPost');
 const { fbLimiter } = require("../middlware/fbLimiter");
 const { tweetLimiter } = require("../middlware/tweetLimiter");
 
+routes.get("/hello", (req, res) => {
+  res.json({ message: "Hello from backend 👋" });
+});
+
+// Example POST route
+routes.post("/test", (req, res) => {
+  const { name } = req.body;
+  res.json({ message: `Hello ${name}, backend is connected ✅` });
+});
 
 routes.post('/youtubepost',YoutubeController.youtubePost)
 
