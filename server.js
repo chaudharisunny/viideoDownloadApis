@@ -1,4 +1,4 @@
-require("dotenv").config()
+
 const express = require('express')
 const app = express()
 const cors=require('cors')
@@ -9,10 +9,24 @@ const rateLimit = require('express-rate-limit');
 app.use(express.json())
 app.use(rateLimit())
 
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // max 100 requests per IP per minute
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.use(limiter);
+
 app.use(cors({
-  origin: "https://video-downloads-frontend.vercel.app/", // 🔑 Replace with your Vercel URL
+  origin: "https://video-downloads-frontend.vercel.app", // 🔑 Replace with your Vercel URL
   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
+
+app.post('/api/v1/youtubepost', (req, res) => {
+  console.log(req.body); // logs { url: '...' } when frontend sends request
+  res.json({ success: true, url: req.body.url });
+});
 
 app.use("/downloads", express.static(path.join(__dirname, "downloads")));
 app.use('/api/v1',indexRoutes)
