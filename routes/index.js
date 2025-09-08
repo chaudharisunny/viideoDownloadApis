@@ -25,7 +25,7 @@ routes.post("/test", (req, res) => {
 routes.post('/youtubepost',Ytlimiter,YoutubeController.youtubePost)
 routes.get('/youtube',checkYoutubeLogin,YoutubeController.youtubeGet)
 routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
-routes.get('/download',checkInstagramLogin,downloadInstagram)
+routes.get('/download',downloadInstagram)
 routes.get('/proxy',proxyMedia)
 
 routes.post("/facebookpost",fbLimiter,FacebookController.downloadFacebook)
