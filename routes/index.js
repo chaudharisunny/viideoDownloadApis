@@ -21,7 +21,7 @@ routes.post("/test", (req, res) => {
   res.json({ message: `Hello ${name}, backend is connected ✅` });
 });
 
-routes.post('/youtubepost',Ytlimiter,YoutubeController.youtubePost)
+routes.post('/youtubepost',checkInstagramLogin,Ytlimiter,YoutubeController.youtubePost)
 routes.get('/youtube',YoutubeController.youtubeGet)
 routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
 
