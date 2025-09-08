@@ -32,4 +32,19 @@ const proxyMedia = async (req, res) => {
   }
 };
 
-module.exports = { downloadInstagram, proxyMedia };
+const downloadInstagramGET = async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).json({ error: "URL is required" });
+
+  try {
+    const media = await queueRequest(url, async () => {
+      return await scrapeInstagramMedia(url);
+    });
+
+    res.json({ success: true, media });
+  } catch (err) {
+    console.error("Scraping failed:", err.message);
+    res.status(500).json({ error: "Failed to fetch media" });
+  }
+};
+module.exports = { downloadInstagram, proxyMedia, downloadInstagramGET };
