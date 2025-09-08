@@ -34,5 +34,5 @@ app.post('/api/v1/youtubepost', (req, res) => {
 });
 
 app.use("/downloads", express.static(path.join(__dirname, "downloads")));
-app.use('/api/v1',indexRoutes)
+app.use('/',indexRoutes)
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
