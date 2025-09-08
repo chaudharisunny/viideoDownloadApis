@@ -19,9 +19,14 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(cors({
-  origin: "https://video-downloads-frontend.vercel.app", // 🔑 Replace with your Vercel URL
-  methods: ["GET", "POST", "PUT", "DELETE"]
+  origin: [
+    "http://localhost:5173",                 // Local dev
+    "https://video-downloads-frontend.vercel.app" // Production
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 
 app.post('/api/v1/youtubepost', (req, res) => {
   console.log(req.body); // logs { url: '...' } when frontend sends request
