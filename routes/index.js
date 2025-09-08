@@ -9,6 +9,7 @@ const FacebookController=require('../controller/facebookPost')
 const TwitterController=require('../controller/twitterPost');
 const { fbLimiter } = require("../middlware/fbLimiter");
 const { tweetLimiter } = require("../middlware/tweetLimiter");
+const Ytlimiter = require("../middlware/ytLimiter");
 
 routes.get("/hello", (req, res) => {
   res.json({ message: "Hello from backend 👋" });
@@ -20,7 +21,7 @@ routes.post("/test", (req, res) => {
   res.json({ message: `Hello ${name}, backend is connected ✅` });
 });
 
-routes.post('/youtubepost',YoutubeController.youtubePost)
+routes.post('/youtubepost',Ytlimiter,YoutubeController.youtubePost)
 routes.get('/youtube',YoutubeController.youtubeGet)
 routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
 
