@@ -21,7 +21,7 @@ routes.post("/test", (req, res) => {
 });
 
 routes.post('/youtubepost',YoutubeController.youtubePost)
-
+routes.get('/youtube',YoutubeController.youtubeGet)
 routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
 
 routes.get('/proxy',proxyMedia)
