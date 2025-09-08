@@ -1,16 +1,30 @@
 // middleware/checkYouTubeLogin.js
-function checkYouTubeLogin(req, res, next) {
-  // Example: check if user is logged in via your session / JWT
-  // This assumes you have req.user set after authentication
-  if (!req.user || !req.user.isLoggedIn) {
-    return res.status(403).json({
-      success: false,
-      message: "You must be logged in to access YouTube videos.",
-    });
-  }
+const { ensureCookies } = require("../middlware/youtubeCookieManger");
 
-  // User is logged in, continue
-  next();
+// Example middleware for API route
+async function checkYoutubeLogin(req, res, next) {
+  try {
+    // Only allow your authenticated users
+    if (!req.user || !req.user.isLoggedIn) {
+      return res.status(403).json({
+        success: false,
+        message: "You must be logged in to access YouTube videos.",
+      });
+    }
+
+    // Auto-refresh cookies
+    // Use environment variables for login
+    const cookiesPath = await ensureCookies(
+      process.env.YT_EMAIL,
+      process.env.YT_PASSWORD
+    );
+
+    req.ytCookiesPath = cookiesPath;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "YouTube login failed" });
+  }
 }
 
-module.exports = { checkYouTubeLogin };
+module.exports = { checkYoutubeLogin };
