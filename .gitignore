@@ -5,3 +5,4 @@ node_modules
 downloads
 gitignore
 .env
+render-build.sh
