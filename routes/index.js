@@ -4,7 +4,7 @@ const routes = express.Router();
 
 const YoutubeController=require('../controller/youtubePost')
 const { checkInstagramLogin } = require("../middlware/checkInstagramLogin");
-const { downloadInstagram, proxyMedia } = require("../controller/instagramPost");
+const { downloadInstagram, proxyMedia, downloadInstagramGET } = require("../controller/instagramPost");
 const FacebookController=require('../controller/facebookPost')
 const TwitterController=require('../controller/twitterPost');
 const { fbLimiter } = require("../middlware/fbLimiter");
@@ -25,7 +25,7 @@ routes.post("/test", (req, res) => {
 routes.post('/youtubepost',Ytlimiter,YoutubeController.youtubePost)
 routes.get('/youtube',checkYoutubeLogin,YoutubeController.youtubeGet)
 routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
-routes.get('/download',downloadInstagram)
+routes.get('/download',downloadInstagramGET)
 routes.get('/proxy',proxyMedia)
 
 routes.post("/facebookpost",fbLimiter,FacebookController.downloadFacebook)
