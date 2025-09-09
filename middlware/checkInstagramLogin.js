@@ -8,82 +8,93 @@ const checkInstagramLogin = async (req, res) => {
 
   if (!url) return res.status(400).json({ error: "URL is required" });
 
-  const isLoggedIn = req.isLoggedIn;
   let browser;
-  let videoUrl = null;
-  let imageUrl = null;
-
   try {
-    browser = await chromium.launch({ headless: true });
-    const context = isLoggedIn
+    browser = await chromium.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--single-process"
+      ]
+    });
+
+    const context = req.isLoggedIn
       ? await browser.newContext({ storageState: "auth.json" })
       : await browser.newContext();
 
     const page = await context.newPage();
     await page.goto(url, { waitUntil: "networkidle" });
 
+    // Wait for media if possible
+    await page.waitForSelector("img, video", { timeout: 10000 }).catch(() => {});
+
     // Private post check
-    if (!isLoggedIn) {
+    if (!req.isLoggedIn) {
       const loginForm = await page.$("input[name='username']");
       if (loginForm) {
         await browser.close();
         return res.status(403).json({
           success: false,
-          message: "Private post. Login required to access.",
+          message: "Private post. Login required to access."
         });
       }
     }
 
-    // Scrape media
+    // Scrape images/videos
     const media = await page.evaluate(() => {
       const imgs = Array.from(document.querySelectorAll("img")).map(el => el.src);
       const vids = Array.from(document.querySelectorAll("video")).map(el => el.src);
       return { imgs, vids };
     });
 
-    if (!media.imgs.length && !media.vids.length) {
+    let videoUrl = media.vids.length ? media.vids[0] : null;
+    let imageUrl = media.imgs.length ? media.imgs[0] : null;
+
+    // Fallback to yt-dlp if nothing found
+    if (!videoUrl && !imageUrl) {
       await new Promise(resolve => {
         exec(`yt-dlp -f best -g "${url}"`, (err, stdout) => {
-          if (!err) videoUrl = stdout.trim();
+          if (!err && stdout.trim()) {
+            videoUrl = stdout.trim();
+          }
           resolve();
         });
       });
     }
 
-    imageUrl = media.imgs.length ? media.imgs[0] : null;
-    videoUrl = media.vids.length ? media.vids[0] : videoUrl;
+    await browser.close();
 
     if (!videoUrl && !imageUrl) {
-      await browser.close();
       return res.status(404).json({
         success: false,
-        message: "No media found",
+        message: "No media found"
       });
     }
 
-    await browser.close();
-
+    // If "download=true", stream file to frontend
     if (download) {
-      // Serve media as blob to frontend
       const mediaUrl = videoUrl || imageUrl;
       const mediaRes = await axios.get(mediaUrl, { responseType: "arraybuffer" });
       res.setHeader("Content-Type", mediaRes.headers["content-type"]);
       return res.send(mediaRes.data);
     }
 
-    // Otherwise, return JSON URLs
+    // Otherwise return JSON URLs
     return res.json({
       success: true,
       url,
       videoUrl: videoUrl || null,
       imageUrl: imageUrl || null,
-      type: videoUrl ? "video" : "image",
+      type: videoUrl ? "video" : "image"
     });
 
   } catch (err) {
     if (browser) await browser.close();
-    console.error(err);
-    return res.status(500).json({ success: false, error: "Scraping failed" });
+    console.error("Instagram scraping failed:", err);
+    return res.status(500).json({ success: false, error: "Scraping failed", details: err.message });
   }
 };
 
