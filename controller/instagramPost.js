@@ -46,15 +46,23 @@ const downloadInstagramGET = async (req, res) => {
     }
 
     if (download) {
+      // direct file download
       const mediaUrl = media.vids[0] || media.imgs[0];
       const mediaRes = await axios.get(mediaUrl, { responseType: "arraybuffer" });
       res.setHeader("Content-Type", mediaRes.headers["content-type"]);
       return res.send(mediaRes.data);
+    } else {
+      // return JSON metadata if not downloading
+      return res.json({
+        success: true,
+        images: media.imgs,
+        videos: media.vids
+      });
     }
+  } catch (err) {
+    console.error("🔥 Instagram GET failed:", err.message);
+    return res.status(500).json({ success: false, error: "Server error" });
   }
-  catch(err){
-    res.status(500).json({err:'server error'})
-  }
-}
+};
 
 module.exports = { downloadInstagram, proxyMedia, downloadInstagramGET };
