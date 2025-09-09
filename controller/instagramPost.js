@@ -34,17 +34,27 @@ const proxyMedia = async (req, res) => {
 
 const downloadInstagramGET = async (req, res) => {
   const url = req.query.url;
+  const download = req.query.download === "true";
+
   if (!url) return res.status(400).json({ error: "URL is required" });
 
   try {
-    const media = await queueRequest(url, async () => {
-      return await scrapeInstagramMedia(url);
-    });
+    const media = await queueRequest(url, async () => scrapeInstagramMedia(url));
 
-    res.json({ success: true, media });
-  } catch (err) {
-    console.error("Scraping failed:", err.message);
-    res.status(500).json({ error: "Failed to fetch media" });
+    if (!media.imgs.length && !media.vids.length) {
+      return res.status(404).json({ success: false, message: "No media found" });
+    }
+
+    if (download) {
+      const mediaUrl = media.vids[0] || media.imgs[0];
+      const mediaRes = await axios.get(mediaUrl, { responseType: "arraybuffer" });
+      res.setHeader("Content-Type", mediaRes.headers["content-type"]);
+      return res.send(mediaRes.data);
+    }
   }
-};
+  catch(err){
+    res.status(500).json({err:'server error'})
+  }
+}
+
 module.exports = { downloadInstagram, proxyMedia, downloadInstagramGET };
