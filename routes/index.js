@@ -11,6 +11,7 @@ const { fbLimiter } = require("../middlware/fbLimiter");
 const { tweetLimiter } = require("../middlware/tweetLimiter");
 const Ytlimiter = require("../middlware/ytLimiter");
 const { checkYoutubeLogin } = require("../middlware/checkYouTubeLogin");
+const { attachInstagramSession } = require("../service/Instagram/instagramSession");
 
 routes.get("/hello", (req, res) => {
   res.json({ message: "Hello from backend 👋" });
@@ -24,8 +25,9 @@ routes.post("/test", (req, res) => {
 
 routes.post('/youtubepost',Ytlimiter,YoutubeController.youtubePost)
 routes.get('/youtube',checkYoutubeLogin,YoutubeController.youtubeGet)
-routes.post("/downloadpost",checkInstagramLogin, downloadInstagram);
-routes.get('/download',downloadInstagramGET)
+
+routes.post("/downloadpost",attachInstagramSession,checkInstagramLogin, downloadInstagram);
+routes.get('/download',attachInstagramSession,downloadInstagramGET)
 routes.get('/proxy',proxyMedia)
 
 routes.post("/facebookpost",fbLimiter,FacebookController.downloadFacebook)
