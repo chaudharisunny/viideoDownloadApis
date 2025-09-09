@@ -4,7 +4,7 @@ set -o errexit
 npm install
 
 # Install Playwright browsers
-npx playwright install --with-deps
+npx playwright install chromium
 
 # Install yt-dlp binary
 mkdir -p bin
